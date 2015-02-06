@@ -5,7 +5,7 @@ from distutils.core import setup
 execfile('package/MqHelper.py')
 
 setup(name='MqHelper',
-      version='1.0',
+      version='1.1',
       description='Message-Queue Helper for Mosquitto',
       author='Paul Klingelhuber',
       author_email='paul@paukl.at',

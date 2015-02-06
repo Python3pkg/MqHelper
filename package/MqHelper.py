@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+# support both old and new python package ( http://mosquitto.org/documentation/python/ )
+try: from paho.mqtt.client import Client as Mosquitto
+except ImportError: from mosquitto import Mosquitto
 
 class MqHelper:
 
@@ -71,10 +77,9 @@ class MqHelper:
 		return callback
 
 	def reconnect(self):
-		import mosquitto
 		print("reconnecting...")
 		try:
-			self.client = mosquitto.Mosquitto(self.clientName)
+			self.client = Mosquitto(self.clientName)
 			ret = self.client.connect(self.host)
 			if ret == 0:
 				self.client.on_connect = self.onConnect()

@@ -16,3 +16,21 @@ Supports:
 
 < 100 lines of python!
 
+## Usage example
+
+```
+import time
+import MqHelper
+
+mq = MqHelper.MqHelper('testClient')
+mq.send('/foo', 'testmessage... bar')
+
+def callback1(topic, msg):
+	print("example callback called on topic '%s' with message '%s'"%(topic, msg))
+
+mq.subscribe("/bar", callback1)
+
+while True:
+	mq.loop()
+	time.sleep(0.1)
+```
