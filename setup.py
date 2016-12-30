@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-
-execfile('package/MqHelper.py')
+from setuptools import setup
 
 setup(name='MqHelper',
-      version='1.1',
+      version='1.1.1',
       description='Message-Queue Helper for Mosquitto',
       author='Paul Klingelhuber',
       author_email='paul@paukl.at',
-      url='http://www.paukl.at/',
-      package_dir = {'': 'package'},
-      py_modules = ['MqHelper']
+      url='https://github.com/nousername/MqHelper',
+	  license='BSD',
+      package_dir = {'':'package'},
+      py_modules = ['MqHelper'],
+      install_requires=[
+      	'paho-mqtt>=1.1'
+      ]
      )
