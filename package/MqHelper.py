@@ -5,21 +5,25 @@
 try: from paho.mqtt.client import Client as Mosquitto
 except ImportError: from mosquitto import Mosquitto
 
-class MqHelper:
+import logging
+logger = logging.getLogger('MqHelper')
 
-	def __init__(self, name=None, host=None):
+class MqHelper(object):
+
+	def __init__(self, name=None, host=None, **kwargs):
 		self.client = None
 		self.pending = None
 		self.host = host or '127.0.0.1'
 		self.clientName = name or 'testClient'
 		self.subscriptions = {}
+		self.kwargs = kwargs
 
 	def loop(self):
 		if self.client == None:
 			self.reconnect()
 		ret = self.client.loop()
 		if ret != 0:
-			print("mosquitto client error")
+			logger.info("mosquitto client error")
 			try:
 				self.client.disconnect()
 			except:
@@ -32,17 +36,17 @@ class MqHelper:
 			try:
 				ret = self.client.publish(topic, msg, 1)
 			except:
-				print("error sending msg")
-			if ret == 0 or len(ret) > 1 and ret[0] == 0:
+				logger.info("error sending msg")
+			if ret == 0 or hasattr(ret, '__getitem__') and ret[0] == 0:
 				# sending success
 				self.pending = None
 			else:
-				print("returned %s"%str(ret))
-				print("saving pending msg %s %s"%(topic, msg))
+				logger.info("returned %s"%str(ret))
+				logger.info("saving pending msg %s %s"%(topic, msg))
 				self.pending = (topic, msg)
 				self.reconnect()				
 		else:
-			print("client not available, saving as pending")
+			logger.info("client not available, saving as pending")
 			self.pending = (topic, msg)
 			self.reconnect()
 
@@ -50,13 +54,13 @@ class MqHelper:
 		def callback(mosq, obj, rc):
 			if rc != 0:
 				self.client = None
-				print("connecting failed")
+				logger.info("connecting failed")
 			else:
 				self.client.on_message = self.createMsgCallback()
 				self.__subscribeAll()
-				print("connected")
+				logger.info("connected")
 				if self.pending:
-					print("sending pending message %s"%self.pending[1])
+					logger.info("sending pending message %s"%self.pending[1])
 					self.send(self.pending[0], self.pending[1])
 		return callback
 
@@ -71,15 +75,15 @@ class MqHelper:
 
 	def createMsgCallback(self):
 		def callback(mosq, obj, msg):
-			print("received msg on %s"%msg.topic)
+			logger.info("received msg on %s"%msg.topic)
 			if self.subscriptions.has_key(msg.topic):
 				self.subscriptions[msg.topic](msg.topic, msg.payload)
 		return callback
 
 	def reconnect(self):
-		print("reconnecting...")
+		logger.info("reconnecting...")
 		try:
-			self.client = Mosquitto(self.clientName)
+			self.client = Mosquitto(self.clientName, **self.kwargs)
 			ret = self.client.connect(self.host)
 			if ret == 0:
 				self.client.on_connect = self.onConnect()

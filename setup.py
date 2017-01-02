@@ -3,12 +3,12 @@
 from setuptools import setup
 
 setup(name='MqHelper',
-      version='1.1.1',
+      version='1.2.0',
       description='Message-Queue Helper for Mosquitto',
       author='Paul Klingelhuber',
       author_email='paul@paukl.at',
       url='https://github.com/nousername/MqHelper',
-	  license='BSD',
+      license='BSD',
       package_dir = {'':'package'},
       py_modules = ['MqHelper'],
       install_requires=[
