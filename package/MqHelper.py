@@ -65,7 +65,7 @@ class MqHelper(object):
 		return callback
 
 	def __subscribeAll(self):
-		for topic in self.subscriptions.keys():
+		for topic in list(self.subscriptions.keys()):
 			self.client.subscribe(topic, 0)
 
 	def subscribe(self, topic, callback):
@@ -76,7 +76,7 @@ class MqHelper(object):
 	def createMsgCallback(self):
 		def callback(mosq, obj, msg):
 			logger.info("received msg on %s"%msg.topic)
-			if self.subscriptions.has_key(msg.topic):
+			if msg.topic in self.subscriptions:
 				self.subscriptions[msg.topic](msg.topic, msg.payload)
 		return callback
 
